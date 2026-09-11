@@ -1,0 +1,24 @@
+[project]
+name = "version-rag-engine"
+version = "0.1.0"
+description = "Evaluation-Driven RAG for Versioned Software Documentation"
+dependencies = [
+    "httpx",
+    "beautifulsoup4",
+    "markdownify",
+    "langchain-text-splitters",
+    "tree-sitter>=0.21.3",
+    "tree-sitter-python",
+    "sentence-transformers",
+    "psycopg2-binary",
+    "python-dotenv",
+    "docker>=7.2.0",
+    "scipy>=1.18.0",
+    "groq>=1.7.0",
+    "db>=0.1.1",
+    "fastapi>=0.141.1",
+    "uvicorn[standard]>=0.52.4",
+    "pydantic>=2.13.5",
+    "pypdf>=6.18.0",
+]
+requires-python = ">=3.12"

@@ -1,0 +1,38 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: version-rag-db
+    environment:
+      POSTGRES_USER: rag_user
+      POSTGRES_PASSWORD: rag_password
+      POSTGRES_DB: version_rag
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rag_user -d version_rag"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build: .
+    container_name: version-rag-api
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PYTHONPATH: /app/src
+      # Tell the API to connect to the 'postgres' container, not 'localhost'
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: rag_user
+      DB_PASSWORD: rag_password
+      DB_NAME: version_rag
+      GROQ_API_KEY: ${GROQ_API_KEY}
+
+volumes:
+  postgres_data:
