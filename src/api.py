@@ -11,6 +11,7 @@ app = FastAPI(title="BMW Intelligence RAG API")
 ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
+    "https://version-rag-engine.vercel.app"
     os.getenv("FRONTEND_URL", "*"),  #Allows Vercel domain
 ]
 
