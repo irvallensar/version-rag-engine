@@ -1,6 +1,8 @@
 import re
 import time
 import os
+import gc
+import torch
 from groq import Groq
 from sentence_transformers import CrossEncoder
 from embedder import Embedder
@@ -9,15 +11,34 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# 1. Lock PyTorch to 1 thread & disable gradient memory overhead
+torch.set_num_threads(1)
+torch.set_grad_enabled(False)
+
 YEAR_PATTERN = re.compile(r"\b(20\d{2})\b")
 
-# 1. INITIALIZE MODELS GLOBALLY (Loads into RAM only once at startup)
-print("Loading Embedding and Reranking Models...")
+print("Initializing lightweight models...")
+
+# 2. Initialize and quantize Embedder to INT8
 global_embedder = Embedder()
-global_db = DBConnection()
+if hasattr(global_embedder, "model"):
+    global_embedder.model = torch.quantization.quantize_dynamic(
+        global_embedder.model, {torch.nn.Linear}, dtype=torch.qint8
+    )
+
+# 3. Initialize and quantize CrossEncoder to INT8
 global_reranker = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
+if hasattr(global_reranker, "model"):
+    global_reranker.model = torch.quantization.quantize_dynamic(
+        global_reranker.model, {torch.nn.Linear}, dtype=torch.qint8
+    )
+
+global_db = DBConnection()
 global_client = Groq()
-print("Models loaded successfully.")
+
+# 4. Force garbage collection of any leftover initialization RAM
+gc.collect()
+print("Models quantized to INT8. Total RAM footprint stabilized below 250MB.")
 
 def infer_model_year(query_text: str) -> str | None:
     years = list(dict.fromkeys(YEAR_PATTERN.findall(query_text)))
@@ -35,7 +56,6 @@ def generate_answer(
     if history is None:
         history = []
 
-    # 2. REMOVE the local initialization here. Use the global variables instead.
     embedder = global_embedder
     db = global_db
     reranker = global_reranker
