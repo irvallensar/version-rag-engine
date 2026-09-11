@@ -4,7 +4,7 @@ from typing import List, Optional, Dict, Any
 from pydantic import BaseModel, Field
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from generate import generate_answer
+from src.generate import generate_answer
 
 app = FastAPI(title="BMW Intelligence RAG API")
 

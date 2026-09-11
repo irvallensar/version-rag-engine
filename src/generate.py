@@ -2,8 +2,8 @@ import re
 import time
 from groq import Groq
 from sentence_transformers import CrossEncoder
-from embedder import Embedder
-from db import DBConnection
+from src.embedder import Embedder
+from src.db import DBConnection
 from dotenv import load_dotenv
 
 load_dotenv()
