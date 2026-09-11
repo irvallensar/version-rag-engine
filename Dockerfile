@@ -13,9 +13,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Pre-cache the lightweight ONNX models inside the image build
-RUN python -c "from fastembed import TextEmbedding; from fastembed.rerank.cross_encoder import TextCrossEncoder; \
-    TextEmbedding('sentence-transformers/all-MiniLM-L6-v2'); \
+# Pre-cache both lightweight ONNX models inside the image build
+RUN python -c "from light_embed import TextEmbedding; \
+    from fastembed.rerank.cross_encoder import TextCrossEncoder; \
+    TextEmbedding('onnx-models/all-mpnet-base-v2-onnx'); \
     TextCrossEncoder('Xenova/ms-marco-MiniLM-L-6-v2')"
 
 COPY src/ ./src/
