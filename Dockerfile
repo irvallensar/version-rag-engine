@@ -13,12 +13,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Pre-cache the lightweight ONNX models
-RUN python -c "from fastembed import TextEmbedding; \
-    try: from fastembed import TextCrossEncoder; \
-    except: from fastembed.rerank.cross_encoder import TextCrossEncoder; \
-    TextEmbedding('sentence-transformers/all-MiniLM-L6-v2'); \
-    TextCrossEncoder('Xenova/ms-marco-MiniLM-L-6-v2')"
+RUN python -c "from fastembed import TextEmbedding; from fastembed.rerank.cross_encoder import TextCrossEncoder; TextEmbedding('sentence-transformers/all-MiniLM-L6-v2'); TextCrossEncoder('Xenova/ms-marco-MiniLM-L-6-v2')"
 
 COPY src/ ./src/
 COPY tests/ ./tests/
