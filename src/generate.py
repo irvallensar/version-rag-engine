@@ -1,14 +1,23 @@
 import re
 import time
+import os
 from groq import Groq
 from sentence_transformers import CrossEncoder
-from src.embedder import Embedder
-from src.db import DBConnection
+from embedder import Embedder
+from db import DBConnection
 from dotenv import load_dotenv
 
 load_dotenv()
 
 YEAR_PATTERN = re.compile(r"\b(20\d{2})\b")
+
+# 1. INITIALIZE MODELS GLOBALLY (Loads into RAM only once at startup)
+print("Loading Embedding and Reranking Models...")
+global_embedder = Embedder()
+global_db = DBConnection()
+global_reranker = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
+global_client = Groq()
+print("Models loaded successfully.")
 
 def infer_model_year(query_text: str) -> str | None:
     years = list(dict.fromkeys(YEAR_PATTERN.findall(query_text)))
@@ -22,13 +31,15 @@ def generate_answer(
     top_k: int = 5,
     history: list[dict] | None = None,
 ) -> tuple[str, str | None, list[dict], float, float]:
+    
     if history is None:
         history = []
 
-    embedder = Embedder()
-    db = DBConnection()
-    reranker = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
-    client = Groq()
+    # 2. REMOVE the local initialization here. Use the global variables instead.
+    embedder = global_embedder
+    db = global_db
+    reranker = global_reranker
+    client = global_client
 
     # Query Rewriter
     search_query = query_text
