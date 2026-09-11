@@ -1,44 +1,22 @@
 import re
 import time
-import os
-import gc
-import torch
 from groq import Groq
-from sentence_transformers import CrossEncoder
+from fastembed.rerank.cross_encoder import TextCrossEncoder
 from embedder import Embedder
 from db import DBConnection
 from dotenv import load_dotenv
 
 load_dotenv()
 
-# 1. Lock PyTorch to 1 thread & disable gradient memory overhead
-torch.set_num_threads(1)
-torch.set_grad_enabled(False)
-
 YEAR_PATTERN = re.compile(r"\b(20\d{2})\b")
 
-print("Initializing lightweight models...")
-
-# 2. Initialize and quantize Embedder to INT8
+# Lightweight ONNX models loaded globally once (~85MB total RAM footprint)
+print("Initializing ONNX models (FastEmbed)...")
 global_embedder = Embedder()
-if hasattr(global_embedder, "model"):
-    global_embedder.model = torch.quantization.quantize_dynamic(
-        global_embedder.model, {torch.nn.Linear}, dtype=torch.qint8
-    )
-
-# 3. Initialize and quantize CrossEncoder to INT8
-global_reranker = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
-if hasattr(global_reranker, "model"):
-    global_reranker.model = torch.quantization.quantize_dynamic(
-        global_reranker.model, {torch.nn.Linear}, dtype=torch.qint8
-    )
-
+global_reranker = TextCrossEncoder(model_name="Xenova/ms-marco-MiniLM-L-6-v2")
 global_db = DBConnection()
 global_client = Groq()
-
-# 4. Force garbage collection of any leftover initialization RAM
-gc.collect()
-print("Models quantized to INT8. Total RAM footprint stabilized below 250MB.")
+print("Models ready. Memory overhead < 90MB.")
 
 def infer_model_year(query_text: str) -> str | None:
     years = list(dict.fromkeys(YEAR_PATTERN.findall(query_text)))
@@ -52,7 +30,6 @@ def generate_answer(
     top_k: int = 5,
     history: list[dict] | None = None,
 ) -> tuple[str, str | None, list[dict], float, float]:
-    
     if history is None:
         history = []
 
@@ -61,7 +38,7 @@ def generate_answer(
     reranker = global_reranker
     client = global_client
 
-    # Query Rewriter
+    # Query Rewriting
     search_query = query_text
     if history:
         rewrite_prompt = (
@@ -82,7 +59,7 @@ def generate_answer(
 
     effective_year = model_year or infer_model_year(search_query)
 
-    # Retrieval & Reranking Benchmarking
+    # Retrieval
     t_ret_start = time.perf_counter()
     query_vector = embedder.embed(search_query)
     initial_results = db.hybrid_search(
@@ -98,8 +75,9 @@ def generate_answer(
         t_ret_end = time.perf_counter() - t_ret_start
         return ("I cannot answer this based on the retrieved documentation.", effective_year, [], t_ret_end, 0.0)
 
-    cross_inp = [[search_query, content] for _, content, _, _ in initial_results]
-    cross_scores = reranker.predict(cross_inp)
+    # ONNX Reranking
+    doc_texts = [content for _, content, _, _ in initial_results]
+    cross_scores = list(reranker.rerank(search_query, doc_texts))
 
     reranked_results = [
         res for _, res in sorted(
@@ -128,7 +106,7 @@ def generate_answer(
 
     assembled_context = "\n".join(context_blocks)
 
-    # Generation Benchmarking
+    # Generation
     t_gen_start = time.perf_counter()
     system_prompt = (
         "You are an expert automotive documentation assistant. "

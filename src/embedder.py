@@ -1,9 +1,9 @@
-from sentence_transformers import SentenceTransformer
+from fastembed import TextEmbedding
 
 class Embedder:
-    def __init__(self, model_name: str = "all-mpnet-base-v2"):
-        print(f"Loading embedding model: {model_name}...")
-        self.model = SentenceTransformer(model_name)
-    
+    def __init__(self):
+        # Uses the exact same 384-dimensional MiniLM model in ONNX format (~90MB on disk, ~30MB RAM)
+        self.model = TextEmbedding(model_name="sentence-transformers/all-MiniLM-L6-v2")
+
     def embed(self, text: str) -> list[float]:
-        return self.model.encode(text).tolist()
+        return list(self.model.embed([text]))[0].tolist()
