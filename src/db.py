@@ -40,7 +40,7 @@ class DBConnection:
                     chunk_type VARCHAR(50) NOT NULL,
                     content TEXT NOT NULL,
                     metadata JSONB,
-                    embedding VECTOR(768),
+                    embedding VECTOR(384),
                     fts_vector TSVECTOR GENERATED ALWAYS AS (
                         to_tsvector('english', content)
                     ) STORED
