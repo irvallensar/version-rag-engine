@@ -8,17 +8,10 @@ from src.generate import generate_answer
 
 app = FastAPI(title="BMW Intelligence RAG API")
 
-ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    "https://version-rag-engine.vercel.app"
-    os.getenv("FRONTEND_URL", "*"),  #Allows Vercel domain
-]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=ALLOWED_ORIGINS,
-    allow_credentials=True,
+    allow_origins=["*"],         # Allows any frontend domain (Vercel, Localhost, etc.)
+    allow_credentials=False,     # MUST be False when using "*"
     allow_methods=["*"],
     allow_headers=["*"],
 )
