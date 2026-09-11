@@ -1,4 +1,4 @@
-# Production-Grade RAG System: Automotive Technical Intelligence
+# Production-Grade RAG System: Automotive Technical Intelligence (BMW)
 
 An optimized, full-stack Retrieval-Augmented Generation (RAG) architecture utilizing hybrid vector search and ONNX-based cross-encoder reranking to deliver highly accurate, document-grounded technical intelligence. 
 
@@ -82,12 +82,3 @@ uvicorn src.api:app --reload --port 8000
 
 ```
 
-
-
-## 📝 License
-
-This project is licensed under the MIT License.
-
-```
-
-```
