@@ -1,9 +1,8 @@
-from light_embed import TextEmbedding
+from fastembed import TextEmbedding
 
 class Embedder:
-    def __init__(self, model_name: str = "onnx-models/all-mpnet-base-v2-onnx"):
-        print(f"Loading ONNX embedding model: {model_name}...")
-        self.model = TextEmbedding(model_name)
+    def __init__(self):
+        self.model = TextEmbedding(model_name="sentence-transformers/all-MiniLM-L6-v2")
 
     def embed(self, text: str) -> list[float]:
-        return self.model.encode([text])[0]
+        return list(self.model.embed([text]))[0].tolist()
