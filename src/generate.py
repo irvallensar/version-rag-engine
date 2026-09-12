@@ -41,21 +41,25 @@ def generate_answer(
     # Query Rewriting
     search_query = query_text
     if history:
-        rewrite_prompt = (
-            "Given the following conversation history and the user's latest question, "
-            "rewrite the question into a standalone query. Do not answer it."
-        )
-        rewrite_messages = [{"role": "system", "content": rewrite_prompt}]
-        for msg in history[-4:]:
-            rewrite_messages.append({"role": msg.get("role", "user"), "content": msg.get("content", "")})
-        rewrite_messages.append({"role": "user", "content": query_text})
+        try:
+            rewrite_prompt = (
+                "Given the following conversation history and the user's latest question, "
+                "rewrite the question into a standalone query. Do not answer it."
+            )
+            rewrite_messages = [{"role": "system", "content": rewrite_prompt}]
+            for msg in history[-4:]:
+                rewrite_messages.append({"role": msg.get("role", "user"), "content": msg.get("content", "")})
+            rewrite_messages.append({"role": "user", "content": query_text})
 
-        rewrite_resp = client.chat.completions.create(
-            model="openai/gpt-oss-120b",
-            messages=rewrite_messages,
-            temperature=0.0,
-        )
-        search_query = rewrite_resp.choices[0].message.content.strip()
+            rewrite_resp = client.chat.completions.create(
+                model="openai/gpt-oss-120b", # Keep whichever model you were using here
+                messages=rewrite_messages,
+                temperature=0.0,
+            )
+            search_query = rewrite_resp.choices[0].message.content.strip()
+        except Exception as e:
+            print(f"Rewrite error caught: {e}")
+            search_query = query_text # Fallback to raw query if Groq rate limits
 
     effective_year = model_year or infer_model_year(search_query)
 
@@ -108,23 +112,28 @@ def generate_answer(
 
     # Generation
     t_gen_start = time.perf_counter()
-    system_prompt = (
-        "You are an expert automotive documentation assistant. "
-        "Answer the user's question using ONLY the provided BMW Indonesia documentation. "
-        "Do not use outside knowledge. If not found, state exactly: "
-        "'I cannot answer this based on the retrieved documentation.' "
-        "Cite the document number (e.g. [Document 1]) when stating facts."
-    )
-    final_messages = [{"role": "system", "content": system_prompt}]
-    for msg in history:
-        final_messages.append({"role": msg.get("role", "user"), "content": msg.get("content", "")})
-    final_messages.append({"role": "user", "content": f"Context:\n{assembled_context}\n\nQuestion: {query_text}"})
+    try:
+        system_prompt = (
+            "You are an expert automotive documentation assistant. "
+            "Answer the user's question using ONLY the provided BMW Indonesia documentation. "
+            "Do not use outside knowledge. If not found, state exactly: "
+            "'I cannot answer this based on the retrieved documentation.' "
+            "Cite the document number (e.g. [Document 1]) when stating facts."
+        )
+        final_messages = [{"role": "system", "content": system_prompt}]
+        for msg in history:
+            final_messages.append({"role": msg.get("role", "user"), "content": msg.get("content", "")})
+        final_messages.append({"role": "user", "content": f"Context:\n{assembled_context}\n\nQuestion: {query_text}"})
 
-    response = client.chat.completions.create(
-        model="openai/gpt-oss-120b",
-        messages=final_messages,
-        temperature=0.0,
-    )
+        response = client.chat.completions.create(
+            model="openai/gpt-oss-120b", # Keep whichever model you were using here
+            messages=final_messages,
+            temperature=0.0,
+        )
+        answer_text = response.choices[0].message.content
+    except Exception as e:
+        answer_text = f"API Error (Likely Groq Rate Limit): {str(e)}"
+        
     t_gen_end = time.perf_counter() - t_gen_start
 
-    return (response.choices[0].message.content, effective_year, sources, t_ret_end, t_gen_end)
+    return (answer_text, effective_year, sources, t_ret_end, t_gen_end)
