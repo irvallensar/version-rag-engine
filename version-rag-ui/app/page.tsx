@@ -88,6 +88,10 @@ export default function Home() {
       ]);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
+      setMessages(prev => [...prev, { 
+        role: "assistant", 
+        content: "The server is currently waking up or experiencing high traffic. Please try your question again in a few seconds." 
+      }]);
     } finally {
       setIsLoading(false);
     }
