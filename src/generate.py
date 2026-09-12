@@ -5,6 +5,8 @@ from fastembed.rerank.cross_encoder import TextCrossEncoder
 from embedder import Embedder
 from db import DBConnection
 from dotenv import load_dotenv
+import gc 
+
 
 load_dotenv()
 
@@ -72,16 +74,16 @@ def generate_answer(
         target_manufacturer=manufacturer,
         target_model=model,
         target_model_year=effective_year,
-        top_k=20,
+        top_k=10,
     )
 
     if not initial_results:
         t_ret_end = time.perf_counter() - t_ret_start
         return ("I cannot answer this based on the retrieved documentation.", effective_year, [], t_ret_end, 0.0)
 
-    # ONNX Reranking
+    # ONNX Reranking (Processed in micro-batches)
     doc_texts = [content for _, content, _, _ in initial_results]
-    cross_scores = list(reranker.rerank(search_query, doc_texts))
+    cross_scores = list(reranker.rerank(search_query, doc_texts, batch_size=2))
 
     reranked_results = [
         res for _, res in sorted(
@@ -135,5 +137,8 @@ def generate_answer(
         answer_text = f"API Error (Likely Groq Rate Limit): {str(e)}"
         
     t_gen_end = time.perf_counter() - t_gen_start
+
+    # Force memory purge before the next request
+    gc.collect()
 
     return (answer_text, effective_year, sources, t_ret_end, t_gen_end)
