@@ -4,6 +4,8 @@ WORKDIR /app
 
 ENV PYTHONPATH=/app/src
 ENV PYTHONUNBUFFERED=1
+ENV MALLOC_ARENA_MAX=2
+ENV OMP_NUM_THREADS=1
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
