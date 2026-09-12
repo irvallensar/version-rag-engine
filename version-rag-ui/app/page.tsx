@@ -94,14 +94,14 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-slate-900 text-slate-100 flex flex-col items-center py-6 px-4 sm:px-6 lg:px-8 font-sans">
+    <main className="min-h-screen bg-slate-900 text-slate-100 flex flex-col items-center py-8 px-4 sm:px-6 lg:px-8 font-sans">
       <div className="max-w-5xl w-full flex flex-col h-[92vh]">
         
         {/* Header with Clear Chat */}
         <header className="flex justify-between items-center pb-4 border-b border-slate-800 flex-shrink-0">
           <div>
             <h1 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-blue-500 animate-pulse"></span>
+              <span className="w-3 h-3 rounded-full bg-blue-500 animate-pulse"></span>
               BMW Technical Intelligence Engine
             </h1>
             <p className="text-ms text-slate-400 mt-0.5">
