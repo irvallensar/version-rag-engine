@@ -28,13 +28,13 @@ The pipeline is split into two primary workflows:
 
 ## 📊 Performance Benchmarks
 
-Evaluated against a ground-truth dataset of 75 complex technical queries:
+Evaluated against a ground-truth dataset of 100 complex and diverse technical queries:
 
 | Metric | Score | Note |
 |--------|-------|------|
-| **Context Recall@5** | 97.3% | Successfully retrieves the correct documentation chunk within the top 5 results. |
-| **MRR (Mean Reciprocal Rank)** | 0.8778 | High precision in placing the most relevant document at the top of the stack. |
-| **Retrieval Latency** | < 300ms | End-to-end database query and Cross-Encoder execution time. |
+| **Context Recall@5** | 99.0% | Successfully retrieves the correct documentation chunk within the top 5 results. |
+| **MRR (Mean Reciprocal Rank)** | 0.8133 | High precision in placing the most relevant document at the top of the stack. |
+| **Retrieval Latency** | 396ms P50 / 918ms P95 | End-to-end database query and Cross-Encoder execution time. |
 
 ## 🚀 Getting Started (Local Development)
 
