@@ -1,4 +1,4 @@
-# Production-Grade RAG System: Automotive Technical Intelligence (BMW)
+# Automotive Technical Intelligence RAG System
 
 An optimized, full-stack Retrieval-Augmented Generation (RAG) architecture utilizing hybrid vector search and ONNX-based cross-encoder reranking to deliver highly accurate, document-grounded technical intelligence. 
 
