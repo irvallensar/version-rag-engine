@@ -38,9 +38,9 @@ question,target_substring,manufacturer,model,model_year
 "I travel frequently in the rear seat on long road trips. Does the 2023 BMW 735i M Sport have seats that can rub my back?","Massage function",BMW,735i M Sport,2023
 "Does the 2023 BMW 735i M Sport provide a glass roof or sunroof to let natural light into the passenger cabin?","Panorama glass roof",BMW,735i M Sport,2023
 "What specialized premium fabric and color is used on the ceiling interior of the 2023 BMW 735i M Sport?","Alcantara anthracite",BMW,735i M Sport,2023
-"How do passengers seated in the rear operate and interact with the large theatre display on the 2024 BMW 735i M Sport?","Touch Command",BMW,735i M Sport,2024
+"What is the resolution of rear seat entertainment screen in the 2024 BMW 735i M Sport?","8K resolution",BMW,735i M Sport,2024
 "Does the 2025 BMW 735i M Sport feature soft-latching doors so passengers do not need to slam them shut?","Soft-Close",BMW,735i M Sport,2025
-"What automated power-assisted opening and closing mechanism is fitted to the passenger entryways of the 2025 BMW 735i M Sport?","Automatic doors",BMW,735i M Sport,2025
+"Does the 2025 BMW 735i M Sport includes ambient lights for the interior?","Ambient light",BMW,735i M Sport,2025
 "What kind of curved digital instrument cluster and central infotainment layout is mounted in the 2025 BMW 735i M Sport?","BMW Curved display",BMW,735i M Sport,2025
 "Can long cargo or luggage items be pushed through from the boot into the main cabin of the 2025 BMW 735i M Sport?","Through-loading system",BMW,735i M Sport,2025
 "What type of carpet or protective floor coverings are installed from the factory in the 2025 BMW 735i M Sport?","velour",BMW,735i M Sport,2025
@@ -51,7 +51,7 @@ question,target_substring,manufacturer,model,model_year
 "What kind of adjustable pneumatic ride leveling chassis suspension is fitted on the 2022 BMW 730Li M Sport?","2-axle air suspension",BMW,730Li M Sport,2022
 "What is the maximum torque output produced by the 6-cylinder engine in the 2021 BMW 740Li Opulence?","450 Nm",BMW,740Li Opulence,2021
 "I am comparing luxury sedans and need to know about the 2024 BMW 735i M Sport braking system. What specific color is applied to the M Sport brakes?","dark blue metallic",BMW,735i M Sport,2024
-"Does the 2025 BMW 735i M Sport come with a spare tire in the trunk, or does it only provide a kit to patch punctures?","Tyre repair kit",BMW,735i M Sport,2025
+"Does this 2024 BMW 735Li M Sport include a Roller sunblinds?","Roller sunblinds",BMW,735Li M Sport,2024
 "The BMW Live Cockpit Professional in the 2021 BMW 740Li Opulence has a digital screen behind the steering wheel. What is the exact size of this instrument display?","10.25""",BMW,740Li Opulence,2021
 "I read that the 2021 BMW 740Li Opulence has an advanced Bowers & Wilkins Diamond audio setup. Exactly how many speakers are hidden throughout the cabin?","16 speakers",BMW,740Li Opulence,2021
 "Can the 2021 BMW 740Li Opulence play physical movies in the rear seats using a disc drive, and if so, what format?","Blu-ray",BMW,740Li Opulence,2021
@@ -75,3 +75,29 @@ question,target_substring,manufacturer,model,model_year
 "I often carry my child in the back seat. Does the 2021 BMW 740Li Opulence provide ISOFIX mounting points with Top Tether in the rear outer seats?","ISOFIX child seat mounting",BMW,740Li Opulence,2021
 "Is the 2021 BMW 740Li Opulence equipped with a full-color BMW Head-Up Display that projects speed and navigation onto the windshield?","full-colour projection",BMW,740Li Opulence,2021
 "Does the 2025 BMW i7 xDrive60 have an electric or internal combustion engine, and is it a front-wheel or all-wheel drive setup?","All-wheel drive",BMW,i7 xDrive60,2025
+
+"What is the exact engine displacement in cc for the BMW 740Li Pure Excellence?","2998 cc",BMW,740Li Pure Excellence,2015
+"How much horsepower does the 740Li Pure Excellence engine produce?","326 hp",BMW,740Li Pure Excellence,2015
+"What is the peak torque output in Nm for this specific BMW 7 Series variant?","450 Nm",BMW,740Li Pure Excellence,2015
+"What is the kerb weight on the BMW 740Li Pure Excellence?","1845 kg",BMW,740Li Pure Excellence,2015
+"What is the declared top speed in kmph for the BMW 740Li Pure Excellence?","250 kmph",BMW,740Li Pure Excellence,2015
+"How many cylinders does the engine of the 740Li Pure Excellence have?","6",BMW,740Li Pure Excellence,2015
+"What is the valve configuration on the 740Li Pure Excellence?","DOHC",BMW,740Li Pure Excellence,2015
+"Does this BMW 740Li Pure Excellence? have Adjustable Steering Column?","Yes",BMW,740Li Pure Excellence,2015
+"What type of fuel supply system is utilized in the 740Li Pure Excellence?","Direct Injection",BMW,740Li Pure Excellence,2015
+"What is the ground clearance on the BMW 740Li Pure Excellence","152 mm",BMW,740Li Pure Excellence,2015
+"Are the tyres in the 2015 BMW 740Li Pure Excellence run flat tyres?","Run Flat",BMW,740Li Pure Excellence,2015
+"What is the exact ground clearance in mm for this vehicle?","152 mm",BMW,740Li Pure Excellence,2015
+"What is the recorded kerb weight of the 740Li Pure Excellence?","1845 kg",BMW,740Li Pure Excellence,2015
+"What is the official seating capacity for this sedan?","5 Seats",BMW,740Li Pure Excellence,2015
+"Is a 360-degree camera included in the safety features of the 740Li Pure Excellence?","Yes",BMW,740Li Pure Excellence,2015
+"Does this variant feature both Hill-Start Assist Control and Downhill Assist Control?","Yes",BMW,740Li Pure Excellence,2015
+"Is a Tyre Pressure Monitor included as a standard feature on this vehicle?","Yes",BMW,740Li Pure Excellence,2015
+"Does the Oto.com specification list Vehicle Stability Control System as a safety feature for this car?","Yes",BMW,740Li Pure Excellence,2015
+"Does the BMW 740Li Pure Excellence feature manual or automatic climate control?","Automatic Climate Control",BMW,740Li Pure Excellence,2015
+"Are the seats in this variant upholstered in fabric or leather?","Leather",BMW,740Li Pure Excellence,2015
+"Does the 740Li Pure Excellence come equipped with heated seats for the front passengers?","Yes",BMW,740Li Pure Excellence,2015
+"Does the vehicle's infotainment system include a built-in Navigation System and Touch Screen?","Yes",BMW,740Li Pure Excellence,2015
+"Is the vehicle equipped with a cooling feature for the glove box?","Yes",BMW,740Li Pure Excellence,2015
+"What specific type of headlamps are listed for the BMW 740Li Pure Excellence?","Xenon",BMW,740Li Pure Excellence,2015
+"Does the BMW 740Li Pure Excellence? have a digital clock?","Digital Clock",BMW,740Li Pure Excellence,2015

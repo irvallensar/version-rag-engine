@@ -243,6 +243,7 @@ export default function Home() {
               <option value="i7 xDrive60">i7 xDrive60</option>
               <option value="730Li M Sport">730Li M Sport</option>
               <option value="740Li Opulence">740Li Opulence</option>
+              <option value="740Li Pure Excellence">740Li Pure Excellence</option>
             </select>
 
             <select
@@ -256,6 +257,7 @@ export default function Home() {
               <option value="2023">2023</option>
               <option value="2022">2022</option>
               <option value="2021">2021</option>
+              <option value="2015">2015</option>
             </select>
 
             <input

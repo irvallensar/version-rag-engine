@@ -40,7 +40,13 @@ BMW_DOCUMENTS = [
         "url": "https://www.bmw.co.id/content/dam/bmw/marketID/bmw_co_id/Brochures/pdf/specification-card–bmw-7-Opulence-2021.pdf.asset.1634545632157.pdf",
         "model": "740Li Opulence",
         "model_year": "2021",
+    },
+    {
+        "url": "https://www.oto.com/en/mobil-baru/bmw/7-series-sedan/740li-pure-excellence",
+        "model": "740Li Pure Excellence",
+        "model_year": "2015",
     }
+    
 ]
 
 
