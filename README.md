@@ -11,6 +11,170 @@ The pipeline is split into two primary workflows:
 1. **Ingestion Pipeline:** Scrapes dynamic web pages and PDFs (using Playwright and BeautifulSoup), parses them into contextual markdown chunks, generates 384-dimensional dense embeddings via `fastembed`, and stores them in a Supabase PostgreSQL database.
 2. **Execution Pipeline:** Processes user queries through a contextual rewriting agent, retrieves relevant documents via a hybrid search algorithm, reranks the candidates using a Cross-Encoder, and streams a hallucination-free response via the Groq LLM API.
 
+ Full Pipeline
+
+### __Phase 1 — Data Ingestion__
+
+
+BMW / Automotive Sources
+        │
+        ├── Dynamic Web Pages
+        │
+        └── PDFs
+        │
+        ▼
+┌─────────────────────────┐
+│ Scraping / Extraction   │
+│                         │
+│ • Playwright            │
+│ • BeautifulSoup         │
+│ • PDF parsing           │
+│ • Markdownify           │
+└────────────┬────────────┘
+             │
+             ▼
+┌─────────────────────────┐
+│ Content Cleaning        │
+│                         │
+│ • Remove irrelevant     │
+│   HTML/navigation/etc.  │
+│ • Convert to Markdown   │
+└────────────┬────────────┘
+             │
+             ▼
+┌─────────────────────────┐
+│ Context-Aware Chunking  │
+│                         │
+│ Text → document chunks  │
+│ + vehicle metadata      │
+└────────────┬────────────┘
+             │
+             ▼
+┌─────────────────────────┐
+│ Embedding Generation    │
+│                         │
+│ fastembed / ONNX        │
+│ MiniLM-L6-v2            │
+│ 384-dimensional vectors │
+└────────────┬────────────┘
+             │
+             ▼
+┌──────────────────────────────┐
+│ Supabase PostgreSQL          │
+│                              │
+│ • Document text              │
+│ • Vehicle metadata           │
+│ • pgvector embeddings        │
+│ • Lexical search index       │
+└──────────────────────────────┘
+
+DATA INGESTION COMPLETE
+
+
+### Ingestion Code Flow
+
+text
+src/pipeline.py
+      │
+      ▼
+src/scraper.py
+      │
+      ▼
+Chunking
+      │
+      ▼
+src/embedder.py
+      │
+      ▼
+src/db.py
+      │
+      ▼
+Supabase PostgreSQL + pgvector
+
+---
+
+### __Phase 2 — Query Execution__
+
+text
+                         User
+                          │
+                          │
+                          ▼
+            "Does it have a glass roof?"
+                          │
+                          ▼
+                ┌───────────────────┐
+                │   Query Rewriter  │
+                │                   │
+                │ LLM analyzes      │
+                │ conversation      │
+                │ history + query   │
+                └─────────┬─────────┘
+                          │
+                          ▼
+                  Standalone Query
+                          │
+                          ▼
+              ┌───────────────────────┐
+              │    Hybrid Retrieval   │
+              └───────────┬───────────┘
+                          │
+              ┌───────────┴───────────┐
+              │                       │
+              ▼                       ▼
+     ┌─────────────────┐     ┌─────────────────┐
+     │ Dense Retrieval │     │ Lexical Search  │
+     │                 │     │                 │
+     │ pgvector        │     │ PostgreSQL FTS  │
+     │ semantic search │     │ keyword search  │
+     └────────┬────────┘     └────────┬────────┘
+              │                       │
+              └───────────┬───────────┘
+                          │
+                          ▼
+              ┌───────────────────────┐
+              │ Reciprocal Rank       │
+              │ Fusion (RRF)          │
+              │                       │
+              │ Combines rankings     │
+              └───────────┬───────────┘
+                          │
+                          ▼
+                    Top ~20 Chunks
+                          │
+                          ▼
+              ┌───────────────────────┐
+              │ Cross-Encoder        │
+              │ Reranker             │
+              │                       │
+              │ Scores query ↔ chunk │
+              │ relevance            │
+              └───────────┬───────────┘
+                          │
+                          ▼
+                     Top ~5 Chunks
+                          │
+                          ▼
+              ┌───────────────────────┐
+              │   Generation LLM      │
+              │                       │
+              │ openai/gpt-oss-120b   │
+              │       via Groq        │
+              └───────────┬───────────┘
+                          │
+                          ▼
+              ┌───────────────────────┐
+              │   Grounded Answer     │
+              │                       │
+              │ • Answer              │
+              │ • Source citations    │
+              │ • Latency metrics     │
+              └───────────────────────┘
+                          │
+                          ▼
+                        User
+
+
 ## 🛠 Tech Stack
 
 * **Frontend:** Next.js, TailwindCSS, Vercel
