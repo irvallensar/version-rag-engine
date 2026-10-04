@@ -55,7 +55,7 @@ flowchart TD
     
     %% Connecting the database to the query phase
     E -.->|Supplies Indexed Data| H
-
+```
 
 ## 🛠 Tech Stack
 
