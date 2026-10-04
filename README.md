@@ -11,168 +11,43 @@ The pipeline is split into two primary workflows:
 1. **Ingestion Pipeline:** Scrapes dynamic web pages and PDFs (using Playwright and BeautifulSoup), parses them into contextual markdown chunks, generates 384-dimensional dense embeddings via `fastembed`, and stores them in a Supabase PostgreSQL database.
 2. **Execution Pipeline:** Processes user queries through a contextual rewriting agent, retrieves relevant documents via a hybrid search algorithm, reranks the candidates using a Cross-Encoder, and streams a hallucination-free response via the Groq LLM API.
 
- Full Pipeline
+Full Pipeline
 
-### __Phase 1 — Data Ingestion__
+flowchart TD
+    A["BMW / Automotive Sources<br/>Web Pages + PDFs"]
 
+    subgraph INGEST["PHASE 1 — DATA INGESTION"]
+        B["Scraping & Extraction<br/>Playwright / BeautifulSoup / PDF Parsing"]
+        C["Cleaning & Chunking<br/>Context-Aware Document Chunks"]
+        D["Embedding Generation<br/>fastembed + ONNX<br/>MiniLM-L6-v2 · 384 dimensions"]
+        E["Supabase PostgreSQL<br/>Document Text + Metadata + pgvector"]
+    end
 
-BMW / Automotive Sources
-        │
-        ├── Dynamic Web Pages
-        │
-        └── PDFs
-        │
-        ▼
-┌─────────────────────────┐
-│ Scraping / Extraction   │
-│                         │
-│ • Playwright            │
-│ • BeautifulSoup         │
-│ • PDF parsing           │
-│ • Markdownify           │
-└────────────┬────────────┘
-             │
-             ▼
-┌─────────────────────────┐
-│ Content Cleaning        │
-│                         │
-│ • Remove irrelevant     │
-│   HTML/navigation/etc.  │
-│ • Convert to Markdown   │
-└────────────┬────────────┘
-             │
-             ▼
-┌─────────────────────────┐
-│ Context-Aware Chunking  │
-│                         │
-│ Text → document chunks  │
-│ + vehicle metadata      │
-└────────────┬────────────┘
-             │
-             ▼
-┌─────────────────────────┐
-│ Embedding Generation    │
-│                         │
-│ fastembed / ONNX        │
-│ MiniLM-L6-v2            │
-│ 384-dimensional vectors │
-└────────────┬────────────┘
-             │
-             ▼
-┌──────────────────────────────┐
-│ Supabase PostgreSQL          │
-│                              │
-│ • Document text              │
-│ • Vehicle metadata           │
-│ • pgvector embeddings        │
-│ • Lexical search index       │
-└──────────────────────────────┘
+    A --> B --> C --> D --> E
 
-DATA INGESTION COMPLETE
+    F["User Query"]
 
+    subgraph QUERY["PHASE 2 — QUERY EXECUTION"]
+        G["Query Rewriting<br/>LLM"]
+        H["Hybrid Retrieval"]
 
-### Ingestion Code Flow
+        I["Dense Search<br/>pgvector"]
+        J["Lexical Search<br/>PostgreSQL Full-Text Search"]
 
-text
-src/pipeline.py
-      │
-      ▼
-src/scraper.py
-      │
-      ▼
-Chunking
-      │
-      ▼
-src/embedder.py
-      │
-      ▼
-src/db.py
-      │
-      ▼
-Supabase PostgreSQL + pgvector
+        K["Reciprocal Rank Fusion<br/>RRF"]
+        L["Top Candidates"]
+        M["Cross-Encoder Reranking"]
+        N["Top Relevant Chunks"]
+        O["Generation LLM<br/>gpt-oss-120b"]
+        P["Grounded Answer<br/>Citations + Metrics"]
+    end
 
----
-
-### __Phase 2 — Query Execution__
-
-text
-                         User
-                          │
-                          │
-                          ▼
-            "Does it have a glass roof?"
-                          │
-                          ▼
-                ┌───────────────────┐
-                │   Query Rewriter  │
-                │                   │
-                │ LLM analyzes      │
-                │ conversation      │
-                │ history + query   │
-                └─────────┬─────────┘
-                          │
-                          ▼
-                  Standalone Query
-                          │
-                          ▼
-              ┌───────────────────────┐
-              │    Hybrid Retrieval   │
-              └───────────┬───────────┘
-                          │
-              ┌───────────┴───────────┐
-              │                       │
-              ▼                       ▼
-     ┌─────────────────┐     ┌─────────────────┐
-     │ Dense Retrieval │     │ Lexical Search  │
-     │                 │     │                 │
-     │ pgvector        │     │ PostgreSQL FTS  │
-     │ semantic search │     │ keyword search  │
-     └────────┬────────┘     └────────┬────────┘
-              │                       │
-              └───────────┬───────────┘
-                          │
-                          ▼
-              ┌───────────────────────┐
-              │ Reciprocal Rank       │
-              │ Fusion (RRF)          │
-              │                       │
-              │ Combines rankings     │
-              └───────────┬───────────┘
-                          │
-                          ▼
-                    Top ~20 Chunks
-                          │
-                          ▼
-              ┌───────────────────────┐
-              │ Cross-Encoder        │
-              │ Reranker             │
-              │                       │
-              │ Scores query ↔ chunk │
-              │ relevance            │
-              └───────────┬───────────┘
-                          │
-                          ▼
-                     Top ~5 Chunks
-                          │
-                          ▼
-              ┌───────────────────────┐
-              │   Generation LLM      │
-              │                       │
-              │ openai/gpt-oss-120b   │
-              │       via Groq        │
-              └───────────┬───────────┘
-                          │
-                          ▼
-              ┌───────────────────────┐
-              │   Grounded Answer     │
-              │                       │
-              │ • Answer              │
-              │ • Source citations    │
-              │ • Latency metrics     │
-              └───────────────────────┘
-                          │
-                          ▼
-                        User
+    F --> G --> H
+    H --> I
+    H --> J
+    I --> K
+    J --> K
+    K --> L --> M --> N --> O --> P
 
 
 ## 🛠 Tech Stack
