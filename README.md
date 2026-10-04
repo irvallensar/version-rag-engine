@@ -11,43 +11,50 @@ The pipeline is split into two primary workflows:
 1. **Ingestion Pipeline:** Scrapes dynamic web pages and PDFs (using Playwright and BeautifulSoup), parses them into contextual markdown chunks, generates 384-dimensional dense embeddings via `fastembed`, and stores them in a Supabase PostgreSQL database.
 2. **Execution Pipeline:** Processes user queries through a contextual rewriting agent, retrieves relevant documents via a hybrid search algorithm, reranks the candidates using a Cross-Encoder, and streams a hallucination-free response via the Groq LLM API.
 
-Full Pipeline
+### Full Pipeline
 
+```mermaid
 flowchart TD
-    A["BMW / Automotive Sources<br/>Web Pages + PDFs"]
+    %% Missing Node A defined here
+    A[(BMW Documentation<br/>Oto.com)]
 
     subgraph INGEST["PHASE 1 — DATA INGESTION"]
-        B["Scraping & Extraction<br/>Playwright / BeautifulSoup / PDF Parsing"]
-        C["Cleaning & Chunking<br/>Context-Aware Document Chunks"]
-        D["Embedding Generation<br/>fastembed + ONNX<br/>MiniLM-L6-v2 · 384 dimensions"]
-        E["Supabase PostgreSQL<br/>Document Text + Metadata + pgvector"]
+        direction TB
+        B["Scraping & Extraction<br/>(Playwright / BeautifulSoup)"]
+        C["Cleaning & Chunking<br/>(Context-Aware Markdown)"]
+        D["Embedding Generation<br/>(fastembed + ONNX MiniLM)"]
+        E[("Supabase PostgreSQL<br/>(Text + Metadata + pgvector)")]
     end
 
     A --> B --> C --> D --> E
 
-    F["User Query"]
+    F(["User Query"])
 
     subgraph QUERY["PHASE 2 — QUERY EXECUTION"]
-        G["Query Rewriting<br/>LLM"]
-        H["Hybrid Retrieval"]
+        direction TB
+        G["Contextual Query Rewriting<br/>(gpt-oss-120b)"]
+        H{"Hybrid Retrieval"}
 
-        I["Dense Search<br/>pgvector"]
-        J["Lexical Search<br/>PostgreSQL Full-Text Search"]
+        I["Dense Search<br/>(pgvector)"]
+        J["Lexical Search<br/>(PostgreSQL/BM25)"]
 
-        K["Reciprocal Rank Fusion<br/>RRF"]
-        L["Top Candidates"]
-        M["Cross-Encoder Reranking"]
-        N["Top Relevant Chunks"]
-        O["Generation LLM<br/>gpt-oss-120b"]
-        P["Grounded Answer<br/>Citations + Metrics"]
+        K["Reciprocal Rank Fusion<br/>(RRF)"]
+        L["Top 10 Candidates"]
+        M["Cross-Encoder Reranking<br/>(MS MARCO)"]
+        N["Top K Relevant Chunks"]
+        O["Generation LLM<br/>(gpt-oss-120b)"]
+        P(["Grounded Answer<br/>(Citations + Latency Metrics)"])
     end
 
     F --> G --> H
-    H --> I
-    H --> J
+    H -->|Semantic| I
+    H -->|Keyword| J
     I --> K
     J --> K
     K --> L --> M --> N --> O --> P
+    
+    %% Connecting the database to the query phase
+    E -.->|Supplies Indexed Data| H
 
 
 ## 🛠 Tech Stack
